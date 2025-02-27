@@ -24,11 +24,7 @@
 				console.log(result);
 				$("#divTime").text(result);
 			
-				/* if (result) {
-					var strDay = result.substr(6, 2);
-					$("#divDay").text(strDay + "일 입니다.");
-					
-				} */
+				// 코드관리 잘 하자
 				if (result) {
 					var strH = result.substr(0, 1);
 					var strh = result.substr(1, 1);
@@ -51,9 +47,8 @@
 		});
 
 		// setTimeout(getTime, 1000);	
-		console.log()
 	}
-	
+	// 시계가 도는 구간임
 	setInterval(getTime, 1000);
 </script>
 
