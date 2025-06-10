@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ReMapper">
+
+    <select id="selectReplys" resultType="com.example.demo.model.ReVo">
+        SELECT
+        	r.reply_no			<!-- 댓글번호 -->
+        	,m.member_name		<!-- 회원이름 -->
+        	,r.reply_content	<!-- 댓글내용 -->
+        	,r.reply_date		<!-- 댓글작성일 -->
+        	,r.reply_udp_date	<!-- 댓글수정일 -->
+        	,r.board_no			<!-- 게시글번호 -->
+        	,r.reply_writer		<!-- 댓글작성자ID -->
+        FROM reply_list r, board_list b
+        INNER JOIN member_list m on r.reply_writer = m.member_id
+        WHERE r.board_no = b.board_no
+        ORDER BY reply_no DESC
+    </select>
+    
+    <select id="selectReView" parameterType="int" resultType="com.example.demo.model.ReVo">
+    	SELECT
+        	r.reply_no
+        	,m.member_name
+        	,r.reply_content
+        	,r.reply_date
+        	,r.reply_udp_date
+        	,r.board_no
+        	,r.reply_writer
+        FROM reply_list r
+        INNER JOIN member_list m on r.reply_writer = m.member_id
+    	WHERE reply_no = #{reply_no}
+    </select>
+	
+	<select id="selectContent" parameterType="int" resultType="com.example.demo.model.ReVo">
+		SELECT
+			r.reply_no
+			,m.member_name
+			,r.reply_content
+			,r.reply_date
+			,r.reply_udp_date
+			,r.board_no
+			,r.reply_writer
+		FROM reply_list r
+		INNER JOIN member_list m on r.reply_writer = m.member_id
+		WHERE board_no = #{board_no}
+		ORDER BY reply_no DESC
+	</select>
+	
+	<select id="getMemId" parameterType="String" resultType="com.example.demo.model.MemVo">
+    	SELECT *
+    	FROM member_list
+    	WHERE member_id = #{member_id}
+    </select>
+	
+    <insert id="insertReply" parameterType="com.example.demo.model.ReVo">
+        INSERT INTO reply_list (
+        	board_no
+        	,reply_writer
+        	,reply_content
+        	,reply_date
+        )
+        VALUES (
+        	#{board_no}
+        	,#{reply_writer}
+        	,#{reply_content}
+        	,NOW()
+        )
+    </insert>
+
+    <update id="updateReply" parameterType="com.example.demo.model.ReVo">
+        UPDATE reply_list
+        SET reply_content = #{reply_content}
+        	,reply_udp_date = NOW()
+        WHERE reply_no = #{reply_no}
+    </update>
+    
+    <update id="updateReMasking" parameterType="com.example.demo.model.ReVo">
+    	UPDATE reply_list
+    	SET reply_content = REGEXP_REPLACE(
+    		reply_content, '건성|찌질|말투|뻔뻔|싸가지', '*****'
+    	)
+    	WHERE reply_content REGEXP('건성|찌질|말투|뻔뻔|싸가지')
+    </update>
+
+    <delete id="deleteReply" parameterType="int">
+        DELETE
+        FROM reply_list
+        WHERE reply_no = #{reply_no}
+    </delete>
+
+   
+</mapper>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<script src="/demo/jquery-3.7.1.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		getTime();
+	});
+	
+	function getTime() {
+		
+	$.ajax({
+		type : 'post',
+		url : '/demo/getTime',
+		headers : {
+			"Content-Type" : "application/json",
+			"X-HTTP-Method-Override" : "POST"
+		},
+		dataType : 'text',
+		data : JSON.stringify({
+			"name" : "name"
+		}),
+		success : function(result) {
+			console.log(result);
+			$("#divTime").text(result);
+			
+			if (result) {
+				var strH = result.substr(0, 1);
+				var strh = result.substr(1, 1);
+		
+			 	if(strH ==0 && strh ==9){				 		
+					$("#divH").text( "출근");
+			 	}else if(strH ==1 && strh==1){
+					$("#divH").text( "점심");
+			 	}else if (strH==1 &&strh==8){
+					$("#divH").text( "퇴근");
+			 	}
+			}
+						
+		},
+		error : function(request, status, error) {
+			console.log(error)
+		}
+	});
+}
+</script>
+
+<style type="text/css">
+.divClass {
+	font-size: 25px; width: 100%;text-align: left;
+}
+</style>
+</head>
+
+<body>
+	<div id='divTime' class="divClass"></div>
+	<div id='divH' class="divClass"></div>
+</body>
+</html>

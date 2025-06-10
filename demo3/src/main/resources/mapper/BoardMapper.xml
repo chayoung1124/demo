@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.BoardMapper">
+
+    <select id="selectBoards" resultType="com.example.demo.model.BoardVo">
+        SELECT
+        	b.board_no			<!-- 게시글번호 -->
+        	,b.board_title		<!-- 게시글제목 -->
+        	,m.member_name		<!-- 회원이름 -->
+        	,b.board_date		<!-- 게시글작성일 -->
+        	,b.board_content	<!-- 게시글내용 -->
+        	,b.udp_date			<!-- 게시글수정일 -->
+        	,b.board_writer		<!-- 게시글작성자ID -->
+        	,b.file_name		<!-- 파일명 -->
+        	,b.open_yn			<!-- 공개여부 -->
+        	,b.notice_no		<!-- 공지사항 -->
+        	,b.board_pw			<!-- 게시글 비밀번호 (비공개 선택 시) -->
+        	,b.file_path		<!-- 파일 저장 경로 -->
+        	,b.image_name		<!-- 이미지명 -->
+        	,b.image_path		<!-- 이미지 저장 경로 -->
+        FROM board_list b
+        INNER JOIN member_list m on b.board_writer = m.member_id
+        ORDER BY CASE WHEN notice_no = 1 THEN 0 ELSE 1 END, board_no DESC
+    </select>
+    
+    <select id="selectView" parameterType="int" resultType="com.example.demo.model.BoardVo">
+    	SELECT
+    		b.board_no
+    		,b.board_title
+			,m.member_name
+    		,b.board_date
+    		,b.udp_date
+    		,b.board_content
+ 			,b.board_writer
+ 			,b.file_name
+ 			,b.open_yn
+ 			,b.notice_no
+ 			,b.board_pw
+ 			,b.file_path
+ 			,b.image_name
+ 			,b.image_path
+    	FROM board_list b
+    	INNER JOIN member_list m on b.board_writer = m.member_id
+    	WHERE b.board_no = #{board_no}
+    </select>
+	
+	<select id="getNoticeCount" resultType="int">
+		SELECT COUNT(*)
+		FROM board_list
+		WHERE notice_no = 1
+	</select>
+
+    <select id="getMemId" parameterType="String" resultType="com.example.demo.model.MemVo">
+    	SELECT *
+    	FROM member_list
+    	WHERE member_id = #{member_id}
+    </select>
+
+    <insert id="insertBoard" parameterType="com.example.demo.model.BoardVo">
+        INSERT INTO board_list (
+        	board_title
+        	,board_writer
+        	,board_date
+        	,board_content
+        	,file_name
+        	,open_yn
+        	,notice_no
+        	,board_pw
+        	,file_path
+        	,image_name
+        	,image_path
+        )
+        VALUES (
+        	#{board_title}
+        	,#{board_writer}
+        	,NOW()
+        	,#{board_content}
+        	,#{file_name}
+        	,#{open_yn}
+        	,#{notice_no}
+        	,#{board_pw}
+        	,#{file_path}
+        	,#{image_name}
+        	,#{image_path}
+        )
+    </insert>
+    
+    <insert id="insertImage" parameterType="com.example.demo.model.BoardVo">
+    	INSERT INTO board_list (
+    		image_name
+    		,image_path
+    	)
+    	VALUES (
+    		#{image_name}
+    		,#{image_path}
+    	)
+    </insert>
+
+    <update id="updateBoard" parameterType="com.example.demo.model.BoardVo">
+        UPDATE board_list
+        SET board_title = #{board_title}
+            ,udp_date = NOW()
+            ,board_content = #{board_content}
+            ,file_name = #{file_name}
+            ,open_yn = #{open_yn}
+            ,notice_no = #{notice_no}
+            ,file_path = #{file_path}
+            ,image_name = #{image_name}
+            ,image_path = #{image_path}
+        WHERE board_no = #{board_no}
+    </update>
+    
+    <update id="updateMasking" parameterType="com.example.demo.model.BoardVo">
+    	UPDATE board_list
+    	SET board_content = REGEXP_REPLACE(
+    		board_content, '건성|찌질|말투|뻔뻔|싸가지', '*****'
+    	)
+    	WHERE board_content REGEXP('건성|찌질|말투|뻔뻔|싸가지')
+    </update>
+
+    <delete id="deleteBoard" parameterType="int">
+        DELETE
+        FROM board_list
+        WHERE board_no = #{board_no}
+    </delete>
+
+   
+</mapper>

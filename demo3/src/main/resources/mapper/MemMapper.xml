@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MemMapper">
+
+    <select id="selectMembers" resultType="com.example.demo.model.MemVo">
+        SELECT
+        	member_no		<!-- 회원번호 -->
+        	,member_id		<!-- 회원ID -->
+        	,member_pwd		<!-- 회원비밀번호 -->
+        	,member_name	<!-- 회원이름 -->
+        	,member_email	<!-- 이메일 -->
+        	,member_phone	<!-- 회원전화번호 -->
+        	,member_type	<!-- 회원성별 -->
+        	,postal_addr	<!-- 우편번호 -->
+        	,road_addr		<!-- 도로명주소 -->
+        	,street_addr	<!-- 지번주소 -->
+        	,detail_addr	<!-- 상세주소 -->
+        	,login_type		<!-- 로그인 유형 -->
+        FROM member_list
+        ORDER BY member_no DESC
+    </select>
+ 
+    
+    <select id="selectMemView" parameterType="int" resultType="com.example.demo.model.MemVo">
+    	SELECT
+    		member_no
+    		,member_id
+    		,member_pwd
+    		,member_name
+    		,member_email
+    		,member_phone
+    		,member_type
+    		,postal_addr
+    		,road_addr
+    		,street_addr
+    		,detail_addr
+    		,login_type
+    	FROM member_list
+    	WHERE member_no = #{member_no}
+    </select>
+
+	<select id="memLogin"  resultType="com.example.demo.model.MemVo">
+		SELECT
+			member_no
+    		,member_id
+    		,member_pwd
+    		,member_name
+    		,member_email
+    		,member_phone
+    		,member_type
+    		,postal_addr
+    		,road_addr
+    		,street_addr
+    		,detail_addr
+    		,login_type
+		FROM member_list
+		WHERE member_id = #{memberId}
+		AND member_pwd = #{memberPwd}
+	</select>    
+    
+    <select id="selectMemId" resultType="com.example.demo.model.MemVo">
+    	SELECT
+    		member_no
+    		,member_id
+    		,member_pwd
+    		,member_name
+    		,member_email
+    		,member_phone
+    		,member_type
+    		,postal_addr
+    		,road_addr
+    		,street_addr
+    		,detail_addr
+    		,login_type
+    	FROM member_list
+    	WHERE member_id = #{memberId}
+    </select>
+    
+	<select id="selectGoogle" parameterType="string" resultType="com.example.demo.model.MemVo">
+		SELECT
+			member_no
+			,member_id
+			,member_pwd
+			,member_name
+			,member_email
+			,member_phone
+			,postal_addr
+			,road_addr
+			,street_addr
+			,detail_addr
+			,login_type
+		FROM member_list
+		WHERE member_id = #{member_id}
+		AND login_type = 'google'
+	</select>
+	
+	<select id="getCount" resultType="com.example.demo.model.MemVo">
+    	SELECT
+    		(SELECT COUNT(b.board_no)
+    		 FROM board_list AS b
+    		 WHERE m.member_id = b.board_writer) AS count_board,
+    		(SELECT COUNT(r.reply_no)
+    		 FROM reply_list AS r
+    		 WHERE m.member_id = r.reply_writer) AS count_reply
+    	FROM member_list AS m
+    	WHERE m.member_id = #{member_id}
+    </select>
+		
+    <insert id="insertMember" parameterType="com.example.demo.model.MemVo">
+        INSERT INTO member_list (
+        	member_id
+        	,member_pwd
+        	,member_name
+        	,member_email
+        	,member_phone
+        	,member_type
+        	,postal_addr
+        	,road_addr
+        	,street_addr
+        	,detail_addr
+        	,login_type
+        )
+        VALUES (
+        	#{member_id}
+        	,#{member_pwd}
+        	,#{member_name}
+        	,#{member_email}
+        	,#{member_phone}
+        	,#{member_type}
+        	,#{postal_addr}
+        	,#{road_addr}
+        	,#{street_addr}
+        	,#{detail_addr}
+        	,'general'
+        )
+    </insert>
+
+	<insert id="insertGoogle" parameterType="com.example.demo.model.MemVo">
+		INSERT INTO member_list (
+			member_id
+			,member_name
+			,member_email
+			,login_type
+		)
+		VALUES (
+			#{member_id}
+			,#{member_name}
+			,#{member_email}
+			,#{login_type}
+		)
+	</insert>
+
+    <update id="updateMember" parameterType="com.example.demo.model.MemVo">
+        UPDATE member_list
+        SET member_pwd = #{member_pwd}
+            ,member_name = #{member_name}
+            ,member_phone = #{member_phone}
+            ,member_type = #{member_type}
+            ,postal_addr = #{postal_addr}
+            ,road_addr = #{road_addr}
+            ,street_addr = #{street_addr}            
+            ,detail_addr = #{detail_addr}
+        WHERE member_id = #{member_id}
+    </update>
+   
+
+    <delete id="deleteMember" parameterType="int">
+        DELETE
+        FROM member_list
+        WHERE member_no = #{member_no}
+    </delete>
+
+</mapper>
